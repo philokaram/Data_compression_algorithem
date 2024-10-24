@@ -2,6 +2,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.File;
+import java.io.FileWriter;
 
 class LZ77 {
     static Scanner input = new Scanner(System.in);
@@ -36,50 +37,62 @@ class LZ77 {
         return arr.get(maxILength);
     }
 
-    static public String read(char from, char operation) {
+    static public String readFormConsole(char operation) {
         String text = "";
-        if (from == 'c') {
-            if (operation == 'c') {
-                System.out.println("Enter your text to compress it (Enter \\0 to end reading): ");
-            } else {
-                System.out.println("Enter your tags to decompress it (Enter \\0 to end reading): ");
-            }
-            while(true){
-                String line = input.nextLine();
-                if(line.charAt(0)== '\\' && line.charAt(1)== '0'  ){
-                    break;
-                }
-                text += line;
-            }
+        if (operation == 'c') {
+            System.out.println("Enter your text to compress it (Enter \\0 to end reading): ");
+        } else {
+            System.out.println("Enter your tags to decompress it (Enter \\0 to end reading): ");
         }
-        // else{
-        //     if(operation == 'c'){
-        //         System.out.print("Enter the path of the text file: ");
-        //         String path = input.nextLine();
-        //         System.out.println(path);
-        //         try {
-        //             File f = new File(path);
-        //             Scanner fInput = new Scanner(f);
-        //             while(fInput.hasNextLine()){
-        //                 text += fInput.nextLine();
-        //             }
-        //             fInput.close();
-                    
-        //         } catch (Exception e) {
-        //             System.out.println(e.getMessage());
-        //         }
-        //     }
-        // }
+        while (true) {
+            String line = input.nextLine();
+            if (line.charAt(0) == '\\' && line.charAt(1) == '0') {
+                break;
+            }
+            text += line;
+        }
         return text;
     }
-    static public void write(String text,char from, char operation) {
-        if (from == 'c') {
-            if (operation == 'c') {
-                System.out.println("the compressed text: ");
-            } else {
-                System.out.println("the decompressed Tags: ");
+
+    static public String readFromFile(String path) {
+        String text = "";
+        System.out.println(path);
+        try {
+            File f = new File(path);
+            Scanner fInput = new Scanner(f);
+            while (fInput.hasNextLine()) {
+                text += fInput.nextLine();
             }
-        System.out.println(text);
+            fInput.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return text;
+    }
+
+    static public void writeToFile(String path, String text, char operation) {
+        String newPath ="";
+        for(int i = 0; i < path.length();i++){
+            if(path.charAt(i) == '.'){
+                break;
+            }
+            newPath += path.charAt(i);
+        }
+        if (operation == 'c') {
+            newPath += "_Compressed.txt";
+        }
+        else{
+            newPath += "_Decompressed.txt";
+        }
+        try {
+            File creatFile = new File(newPath);
+            creatFile.createNewFile();
+            FileWriter f = new FileWriter(newPath);
+            f.write(text);
+            f.close();
+            
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -98,23 +111,32 @@ class LZ77 {
         String in_text;
         String out_text;
         if (choice == 1) {
-            in_text = read('c', 'c');
-            out_text =compress(in_text,10,10);
-            write(out_text, 'c', 'c');
+            in_text = readFormConsole('c');
+            out_text = compress(in_text, 10, 10);
+            System.out.println("the compressed text: ");
+            System.out.println(out_text);
         } else if (choice == 2) {
-            in_text = read('c', 'd');
+            in_text = readFormConsole('d');
             out_text = decompress(in_text);
-            write(out_text, 'c', 'd');
+            System.out.println("the decompressed Tags: ");
+            System.out.println(out_text);
         } else if (choice == 3) {
-            // in_text = read('f', 'c');
-            // out_text = compress(in_text, 10, 10);
+            System.out.print("Enter the path of the text file: ");
+            String path = input.nextLine();
+            in_text = readFromFile(path);
+            out_text = compress(in_text, 10, 10);
+            writeToFile(path,out_text, 'c');
         } else if (choice == 4) {
-            in_text = read('f', 'd');
+            System.out.print("Enter the path of the Tags file: ");
+            String path = input.nextLine();
+            in_text = readFromFile(path);
+            out_text = decompress(in_text);
+            writeToFile(path,out_text, 'd');
         } else {
         }
     }
 
-    public static String compress(String text , int search_window_size ,int look_ahead_window_size  ) {
+    public static String compress(String text, int search_window_size, int look_ahead_window_size) {
         ArrayList<Tag> tags = new ArrayList<>();
         tags.add(new Tag(0, 0, text.charAt(0)));
         for (int i = 1; i < text.length(); i++) { // text
@@ -144,9 +166,10 @@ class LZ77 {
             tags.add(x);
             i += x.length;
         }
-        String outputString="";
+        String outputString = "";
         for (int i = 0; i < tags.size(); i++) {
-            outputString += ("<" + tags.get(i).position + "," + tags.get(i).length + "," + tags.get(i).nextSymbol + ">");
+            outputString += ("<" + tags.get(i).position + "," + tags.get(i).length + "," + tags.get(i).nextSymbol
+                    + ">");
         }
         return outputString;
     }
