@@ -1,6 +1,7 @@
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.File;
 
 class LZ77 {
     static Scanner input = new Scanner(System.in);
@@ -50,8 +51,25 @@ class LZ77 {
                 }
                 text += line;
             }
-            return text;
         }
+        // else{
+        //     if(operation == 'c'){
+        //         System.out.print("Enter the path of the text file: ");
+        //         String path = input.nextLine();
+        //         System.out.println(path);
+        //         try {
+        //             File f = new File(path);
+        //             Scanner fInput = new Scanner(f);
+        //             while(fInput.hasNextLine()){
+        //                 text += fInput.nextLine();
+        //             }
+        //             fInput.close();
+                    
+        //         } catch (Exception e) {
+        //             System.out.println(e.getMessage());
+        //         }
+        //     }
+        // }
         return text;
     }
     static public void write(String text,char from, char operation) {
@@ -61,7 +79,7 @@ class LZ77 {
             } else {
                 System.out.println("the decompressed Tags: ");
             }
-           System.out.println(text);
+        System.out.println(text);
         }
     }
 
@@ -88,7 +106,8 @@ class LZ77 {
             out_text = decompress(in_text);
             write(out_text, 'c', 'd');
         } else if (choice == 3) {
-            in_text = read('f', 'c');
+            // in_text = read('f', 'c');
+            // out_text = compress(in_text, 10, 10);
         } else if (choice == 4) {
             in_text = read('f', 'd');
         } else {
