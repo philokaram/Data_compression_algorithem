@@ -1,8 +1,8 @@
 
-import java.util.ArrayList;
-import java.util.Scanner;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 class LZ77 {
     static Scanner input = new Scanner(System.in);
@@ -56,12 +56,11 @@ class LZ77 {
 
     static public String readFromFile(String path) {
         String text = "";
-        System.out.println(path);
         try {
             File f = new File(path);
             Scanner fInput = new Scanner(f);
             while (fInput.hasNextLine()) {
-                text += fInput.nextLine();
+                text += fInput.nextLine()+"\n";
             }
             fInput.close();
         } catch (Exception e) {
@@ -124,7 +123,7 @@ class LZ77 {
             System.out.print("Enter the path of the text file: ");
             String path = input.nextLine();
             in_text = readFromFile(path);
-            out_text = compress(in_text, 10, 10);
+            out_text = compress(in_text, 15, 15);
             writeToFile(path,out_text, 'c');
         } else if (choice == 4) {
             System.out.print("Enter the path of the Tags file: ");
@@ -178,13 +177,25 @@ class LZ77 {
         String decompressed_text = "";
         for (int i = 0; i < input_tags.length(); i++) {
             if (input_tags.charAt(i) == '<') {
-                int position = (input_tags.charAt((i + 1)) - '0');
-                int length = (input_tags.charAt((i + 3)) - '0');
+                String str_position ="";
+                String str_length ="";
+                i++;
+                while(input_tags.charAt(i) != ','){
+                    str_position += input_tags.charAt(i++);
+                }
+                i++;
+                while(input_tags.charAt(i) != ','){
+                    str_length += input_tags.charAt(i++);
+                }
+                i++;
+                int position = Integer.parseInt(str_position);
+                int length = Integer.parseInt(str_length);
+                //int length = (input_tags.charAt((i + 3)) - '0');
                 for (int j = decompressed_text.length() - position; length > 0; length--, j++) {
                     decompressed_text += decompressed_text.charAt(j);
                 }
-                decompressed_text += input_tags.charAt(i + 5);
-                i += 6;
+                decompressed_text += input_tags.charAt(i);
+
             }
         }
         return decompressed_text;

@@ -1,0 +1,5 @@
+Problem 3: Order Statistics (array):
+An order statistics problem denotes finding the nth smallest/largest element in an array, for instance, finding
+the minimum, maximum, median, or second largest number.
+The code for this type of problems relies on what is required. For example, finding maximum element in an
+array can be performed like this:
