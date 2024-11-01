@@ -31,7 +31,10 @@ public class LZW {
             File f = new File(path);
             Scanner fInput = new Scanner(f);
             while (fInput.hasNextLine()) {
-                text += fInput.nextLine() + "\n";
+                text += fInput.nextLine() ;
+                if  (fInput.hasNextLine()){
+                    text += "\n";
+                }
             }
             fInput.close();
         } catch (Exception e) {
@@ -97,16 +100,16 @@ public class LZW {
                 System.out.print("Enter the path of the text file: ");
                 String path = input.nextLine();
                 in_text = readFromFile(path);
-                // out_text = compress(in_text, 15, 15);
-                // writeToFile(path,out_text, 'c');
+                out_text = compress(in_text);
+                writeToFile(path,out_text, 'c');
                 break;
             }
             case 4: {
                 System.out.print("Enter the path of the Tags file: ");
                 String path = input.nextLine();
                 in_text = readFromFile(path);
-                //out_text = decompress(in_text);
-                // writeToFile(path,out_text, 'd');
+                out_text = decompress(in_text);
+                writeToFile(path,out_text, 'd');
                 break;
             }
             default:
@@ -150,8 +153,11 @@ public class LZW {
             }
         }
         String compressedText = "";
-        for (int i : indexes) {
-            compressedText += Integer.toString(i) +",";
+        for (int i =0; i < indexes.size();i++) {
+            compressedText += Integer.toString(indexes.get(i));
+            if(i != indexes.size()-1){
+                compressedText += ",";
+            }
         }
         return compressedText;
     }
@@ -161,18 +167,24 @@ public class LZW {
         Vector<String> dictionary = new Vector<>();
         String produceText = "",perviousDecompressedText = "",dictionaryText="";
         int currentIndex = 0;
-        for(int i = 0 ; i < strIndexes.length ; i++){
+        if(strIndexes.length > 0){
+            currentIndex = Integer.parseInt(strIndexes[0]);
+            produceText += (char)currentIndex;
+            perviousDecompressedText = perviousDecompressedText +(char)currentIndex;
+
+        }
+        for(int i = 1 ; i < strIndexes.length ; i++){
             currentIndex = Integer.parseInt(strIndexes[i]);
             if( currentIndex< 128){
                 produceText += (char)currentIndex;
                 dictionaryText = perviousDecompressedText +(char)currentIndex;
-                perviousDecompressedText = perviousDecompressedText +(char)currentIndex;
+                perviousDecompressedText = "" + (char)currentIndex;
                 dictionary.add(dictionaryText);
             }else{
-                if( currentIndex-128 <= dictionary.size()  ){
+                if( currentIndex-128 < dictionary.size()  ){
                     produceText += dictionary.elementAt(currentIndex -128);
                     dictionaryText = perviousDecompressedText +dictionary.elementAt(currentIndex-128).charAt(0);
-                    perviousDecompressedText = perviousDecompressedText +dictionary.elementAt(currentIndex-128).charAt(0);
+                    perviousDecompressedText = dictionary.elementAt(currentIndex-128);
                     dictionary.add(dictionaryText);
                 }
                 else{

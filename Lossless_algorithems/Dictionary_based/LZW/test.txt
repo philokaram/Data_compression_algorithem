@@ -1,0 +1,26 @@
+Data compression has been an enabling technology for the information revolution, and as this
+revolution has changed our lives, data compression has become a more and more ubiquitous, if
+often invisible, presence. From mp3 players, to smartphones, to digital television and movies,
+data compression is an integral part of almost all information technology. This incorporation of
+compression into more and more of our lives also points to a certain degree of maturation and
+stability of the technology. This maturity is reflected in the fact that there are fewer differences
+between each edition of this book. In the second edition we added new techniques that had been
+developed since the first edition of this book came out. In the third edition we added a chapter
+on audio compression, a topic that had not been adequately covered in the second edition. In
+this edition we have tried to do the same with wavelet-based compression, in particular with the
+
+increasingly popular JPEG 2000 standard. There are now two chapters dealing with wavelet-
+based compression, one devoted exclusively to wavelet-based image compression algorithms.
+
+We have also filled in details that were left out from previous editions, such as a description
+of canonical Huffman codes and more information on binary arithmetic coding. We have also
+added descriptions of techniques that have been motivated by the Internet, such as the speech
+coding algorithms used for Internet applications.
+All this has yet again enlarged the book. However, the intent remains the same: to provide
+an introduction to the art or science of data compression. There is a tutorial description of most
+of the popular compression techniques followed by a description of how these techniques are
+used for image, speech, text, audio, and video compression. One hopes the size of the book
+will not be intimidating. Once you open the book and begin reading a particular section we
+hope you will find the content easily accessible. If some material is not clear write to me at
+sayood@datacompression.unl.edu with specific questions and I will try and help (homework
+problems and projects are completely your responsibility).
