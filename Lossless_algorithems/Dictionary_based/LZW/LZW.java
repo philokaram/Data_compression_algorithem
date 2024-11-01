@@ -89,9 +89,9 @@ public class LZW {
                 break;
             case 2:
                 in_text = readFormConsole('d');
-                // out_text = decompress(in_text);
+                out_text = decompress(in_text);
                 System.out.println("the decompressed Tags: ");
-                //System.out.println(out_text);
+                System.out.println(out_text);
                 break;
             case 3: {
                 System.out.print("Enter the path of the text file: ");
@@ -154,5 +154,35 @@ public class LZW {
             compressedText += Integer.toString(i) +",";
         }
         return compressedText;
+    }
+
+    public static String decompress(String compressedText){
+        String[] strIndexes = compressedText.split(",");
+        Vector<String> dictionary = new Vector<>();
+        String produceText = "",perviousDecompressedText = "",dictionaryText="";
+        int currentIndex = 0;
+        for(int i = 0 ; i < strIndexes.length ; i++){
+            currentIndex = Integer.parseInt(strIndexes[i]);
+            if( currentIndex< 128){
+                produceText += (char)currentIndex;
+                dictionaryText = perviousDecompressedText +(char)currentIndex;
+                perviousDecompressedText = perviousDecompressedText +(char)currentIndex;
+                dictionary.add(dictionaryText);
+            }else{
+                if( currentIndex-128 <= dictionary.size()  ){
+                    produceText += dictionary.elementAt(currentIndex -128);
+                    dictionaryText = perviousDecompressedText +dictionary.elementAt(currentIndex-128).charAt(0);
+                    perviousDecompressedText = perviousDecompressedText +dictionary.elementAt(currentIndex-128).charAt(0);
+                    dictionary.add(dictionaryText);
+                }
+                else{
+                    dictionary.add(perviousDecompressedText+perviousDecompressedText.charAt(0));
+                    produceText += perviousDecompressedText+perviousDecompressedText.charAt(0);
+                    perviousDecompressedText = perviousDecompressedText+perviousDecompressedText.charAt(0);
+                }
+            }
+        }
+
+        return produceText;
     }
 }
