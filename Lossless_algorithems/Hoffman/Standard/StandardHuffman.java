@@ -1,10 +1,11 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.util.HashMap;
-import java.util.Scanner;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Scanner;
 
-public class StandardHuffman {
+public class standardHuffman {
     static Scanner input = new Scanner(System.in);
 
     static public String readFormConsole(char operation) {
@@ -64,7 +65,7 @@ public class StandardHuffman {
         }
     }
 
-    public static void main(String args) {
+    public static void main(String[] args) {
         System.out.println("    _____________________________________________________________  ");
         System.out.println("   |                                                             | ");
         System.out.println("   |      welcome to Standard Huffman compression algorithm      | ");
@@ -106,7 +107,6 @@ public class StandardHuffman {
 
     public static String Compress(String originalText) {
         // 1- calculate frequency (instead of probability)
-        // Map <char ,Integer> frequencyMap = new HashMap<char,Integer>();
         Map<Character, Integer> frequencyMap = new HashMap<Character, Integer>();
         for (int i = 0; i < originalText.length(); i++) { 
             if(frequencyMap.containsKey(originalText.charAt(i))){
@@ -115,14 +115,95 @@ public class StandardHuffman {
                 frequencyMap.put(originalText.charAt(i),1);
             }
         }
+        
+        // 2- make nodes and sort it
+        PriorityQueue<Node> priorityQueue = new PriorityQueue<>();
         for (Map.Entry<Character, Integer> row : frequencyMap.entrySet()) {
-            System.out.println( row.getKey() + " "+row.getValue());
+            priorityQueue.add(new Node(row.getKey(), row.getValue()));
+        }
+        // 3- create code Nodes
+        while(priorityQueue.size()>1){
+            Node left = priorityQueue.poll();
+            Node right = priorityQueue.poll();
+            Node parent = new Node(left.getFrequency() + right.getFrequency(), left, right);
+            priorityQueue.add(parent);
+        }
+        Map<Character, String> codesMap = new HashMap<Character, String>();
+        generateCode(priorityQueue.poll(),"",codesMap);
+        for (Map.Entry<Character, String> e : codesMap.entrySet()) {
+            System.out.println(e.getKey() +" "+e.getValue());
             
         }
-        return "a";
+        String decodedText ="";
+        for (int i = 0; i < originalText.length(); i++) {
+            decodedText += codesMap.get(originalText.charAt(i));
+        }
+        return decodedText;
+    }
+    public static void generateCode(Node root,String code,Map<Character, String> codesMap){
+        if (root == null) {
+            return;
+        }
+        if(root.getRight() == null && root.getLeft() == null){
+            codesMap.put(root.getValue(), code);
+            return;
+        }
+        generateCode(root.getLeft(), code+"0", codesMap);
+        generateCode(root.getRight(), code+"1", codesMap);
     }
     public static String decompress(String originalText) {
         // 1- calculate probabilities
         return "a";
+    }
+    public static class Node implements Comparable<Node> {
+    private Character value ;
+    private Node left;
+    private Node right;
+    
+    private int frequency;
+    public Node(Character value, int frequency) {
+        this.value = value;
+        this.frequency = frequency;
+    }
+    public Node( int frequency,Node left ,Node right) {
+        // this.value = value;
+        this.frequency = frequency;
+        this.left = left;
+        this.right = right;
+    }
+    public Node getRight() {
+        return right;
+    }
+    public void setRight(Node right) {
+        this.right = right;
+    }
+    public Character getValue() {
+        return value;
+    }
+    public void setValue(Character value) {
+        this.value = value;
+    }
+    
+    public int getFrequency() {
+        return frequency;
+    }
+    public void setFrequency(int frequency) {
+        this.frequency = frequency;
+    }
+
+        @Override
+        public int compareTo(Node other) {
+            // int frequencyComparison = Integer.compare(this.frequency, other.frequency);
+            // if (frequencyComparison != 0) {
+            //     return frequencyComparison;
+            // }
+            // return Character.compare(this.value, other.value);       
+            return this.frequency - other.frequency;       
+            }
+
+        public Node getLeft() {
+            return left;
+        }
+        
     }
 }
