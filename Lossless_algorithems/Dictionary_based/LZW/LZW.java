@@ -85,7 +85,6 @@ public class LZW {
         switch (choice) {
             case 1:
                 in_text = readFormConsole('c');
-                compress(in_text);
                 out_text = compress(in_text);
                 System.out.println("the compressed text: ");
                 System.out.println(out_text);
