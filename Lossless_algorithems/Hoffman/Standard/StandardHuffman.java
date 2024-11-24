@@ -8,6 +8,7 @@ import java.util.Scanner;
 public class standardHuffman {
     static Scanner input = new Scanner(System.in);
 
+
     static public String readFormConsole(char operation) {
         String text = "";
         if (operation == 'c') {
@@ -20,6 +21,9 @@ public class standardHuffman {
             if (line.charAt(0) == '\\' && line.charAt(1) == '0') {
                 break;
             }
+            if(text.length() !=0 ){
+                text += "\n";
+            }
             text += line;
         }
         return text;
@@ -31,7 +35,10 @@ public class standardHuffman {
             File f = new File(path);
             Scanner fInput = new Scanner(f);
             while (fInput.hasNextLine()) {
-                text += fInput.nextLine() + "\n";
+                if(text.length() !=0 ){
+                    text += "\n";
+                }
+                text += fInput.nextLine();
             }
             fInput.close();
         } catch (Exception e) {
@@ -86,9 +93,9 @@ public class standardHuffman {
             System.out.println(out_text);
         } else if (choice == 2) {
             in_text = readFormConsole('d');
-            out_text = decompress(in_text);
+           out_text = decompress(in_text);
             System.out.println("the decompressed text: ");
-            System.out.println(out_text);
+           System.out.println(out_text);
         } else if (choice == 3) {
             System.out.print("Enter the path of the text file: ");
             String path = input.nextLine();
@@ -99,6 +106,7 @@ public class standardHuffman {
             System.out.print("Enter the path of the compressed file: ");
             String path = input.nextLine();
             in_text = readFromFile(path);
+            Map<String, Character> codesMap = new HashMap<>();
             out_text = decompress(in_text);
             writeToFile(path, out_text, 'd');
         } else {
@@ -130,15 +138,32 @@ public class standardHuffman {
         }
         Map<Character, String> codesMap = new HashMap<Character, String>();
         generateCode(priorityQueue.poll(), "", codesMap);
-        for (Map.Entry<Character, String> e : codesMap.entrySet()) {
-            System.out.println(e.getKey() + " " + e.getValue());
+        // for (Map.Entry<Character, String> e : codesMap.entrySet()) {
+        //     System.out.println(e.getKey() + " " + e.getValue());
 
-        }
-        String decodedText = "";
+        // }
+        // 4-compress
+        String BinaryText = "";
         for (int i = 0; i < originalText.length(); i++) {
-            decodedText += codesMap.get(originalText.charAt(i));
+            BinaryText += codesMap.get(originalText.charAt(i));
         }
-        return decodedText;
+        // 5-convert to binary
+        String result ="";
+        result += BinaryText.length() +"\n";
+        for (int i = 0; i < BinaryText.length(); i += 8) {
+            String byteString = BinaryText.substring(i, Math.min(i + 8, BinaryText.length()));
+            while(byteString.length() != 8){
+                byteString += "0";
+            }
+            int charCode = Integer.parseInt(byteString, 2);
+            result += (char) charCode;
+        }
+
+        for (Map.Entry<Character, String> e : codesMap.entrySet()) {
+            result += "\n"+e.getKey()+" "+e.getValue() ;
+            // System.out.println(result);
+        }
+        return result;
     }
 
     public static void generateCode(Node root, String code, Map<Character, String> codesMap) {
@@ -153,9 +178,22 @@ public class standardHuffman {
         generateCode(root.getRight(), code + "1", codesMap);
     }
 
-    public static String decompress(String decodedText, Map<String, Character> codesMap) {
+    public static String decompress(String decodedText) {
+        Map<String,Character> codesMap = new HashMap<String,Character>();
+        String[] arr = decodedText.split("\n"); 
+
+        int length = Integer.parseInt(arr[0]);
+        decodedText = "";
+        for (int i = 0; i < arr[1].length(); i++) {
+            decodedText += Integer.toBinaryString(arr[1].charAt(i));
+        }
+        for (int i = 2; i < arr.length; i++) {
+            String[] charCode = arr[i].split(" ");
+            codesMap.put(charCode[1],charCode[0].charAt(0));
+        }
+        System.out.println(length);
         String code = "", originalText = "";
-        for (int i = 0; i < decodedText.length(); i++) {
+        for (int i = 0; i < length; i++) {
             code += decodedText.charAt(i);
             if (codesMap.containsKey(code)) {
                 originalText += codesMap.get(code);
