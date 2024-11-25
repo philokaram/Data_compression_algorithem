@@ -22,7 +22,7 @@ public class standardHuffman {
                 break;
             }
             if(text.length() !=0 ){
-                text += "\n";
+                text += '\n';
             }
             text += line;
         }
@@ -36,7 +36,7 @@ public class standardHuffman {
             Scanner fInput = new Scanner(f);
             while (fInput.hasNextLine()) {
                 if(text.length() !=0 ){
-                    text += "\n";
+                    text += '\n';
                 }
                 text += fInput.nextLine();
             }
@@ -106,7 +106,6 @@ public class standardHuffman {
             System.out.print("Enter the path of the compressed file: ");
             String path = input.nextLine();
             in_text = readFromFile(path);
-            Map<String, Character> codesMap = new HashMap<>();
             out_text = decompress(in_text);
             writeToFile(path, out_text, 'd');
         } else {
@@ -147,23 +146,29 @@ public class standardHuffman {
         for (int i = 0; i < originalText.length(); i++) {
             BinaryText += codesMap.get(originalText.charAt(i));
         }
-        // 5-convert to binary
-        String result ="";
-        result += BinaryText.length() +"\n";
-        for (int i = 0; i < BinaryText.length(); i += 8) {
-            String byteString = BinaryText.substring(i, Math.min(i + 8, BinaryText.length()));
-            while(byteString.length() != 8){
-                byteString += "0";
-            }
-            int charCode = Integer.parseInt(byteString, 2);
-            result += (char) charCode;
-        }
+        // // 5-convert to binary
+        // String result ="";
+        // result += BinaryText.length() +"\n";
+        // for (int i = 0; i < BinaryText.length(); i += 8) {
+        //     String byteString = BinaryText.substring(i, Math.min(i + 8, BinaryText.length()));
+        //     while(byteString.length() != 8){
+        //         byteString += "0";
+        //     }
+        //     int charCode = Integer.parseInt(byteString, 2);
+        //     result += (char) charCode;
+        // }
 
         for (Map.Entry<Character, String> e : codesMap.entrySet()) {
-            result += "\n"+e.getKey()+" "+e.getValue() ;
+            if(e.getKey() == '\n'){
+                BinaryText += "\n_,"+e.getValue() ;
+            }
+            else{
+                BinaryText += "\n"+e.getKey()+","+e.getValue() ;
+            }
             // System.out.println(result);
         }
-        return result;
+        // return result;
+        return BinaryText;
     }
 
     public static void generateCode(Node root, String code, Map<Character, String> codesMap) {
@@ -179,21 +184,28 @@ public class standardHuffman {
     }
 
     public static String decompress(String decodedText) {
+        // System.out.println(decodedText);
         Map<String,Character> codesMap = new HashMap<String,Character>();
         String[] arr = decodedText.split("\n"); 
 
-        int length = Integer.parseInt(arr[0]);
-        decodedText = "";
-        for (int i = 0; i < arr[1].length(); i++) {
-            decodedText += Integer.toBinaryString(arr[1].charAt(i));
+        //int length = Integer.parseInt(arr[0]);
+        decodedText = arr[0];
+        // for (int i = 0; i < arr[1].length(); i++) {
+        //     decodedText += Integer.toBinaryString(arr[1].charAt(i));
+        // }
+        for (int i = 1; i < arr.length; i++) {
+            String[] charCode = arr[i].split(",");
+            // System.out.println(charCode[0].charAt(0) +" "+charCode[1]);
+            if(charCode[0].charAt(0) == '_'){
+                codesMap.put(charCode[1],'\n');
+            }
+            else{
+                codesMap.put(charCode[1],charCode[0].charAt(0));
+            }
         }
-        for (int i = 2; i < arr.length; i++) {
-            String[] charCode = arr[i].split(" ");
-            codesMap.put(charCode[1],charCode[0].charAt(0));
-        }
-        System.out.println(length);
+        // System.out.println(length);
         String code = "", originalText = "";
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < decodedText.length(); i++) {
             code += decodedText.charAt(i);
             if (codesMap.containsKey(code)) {
                 originalText += codesMap.get(code);
