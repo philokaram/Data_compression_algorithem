@@ -8,13 +8,8 @@ public class LZW {
 
     static Scanner input = new Scanner(System.in);
 
-    static public String readFormConsole(char operation) {
+    static public String readFormConsole() {
         String text = "";
-        if (operation == 'c') {
-            System.out.println("Enter your text to compress it (Enter \\0 to end reading): ");
-        } else {
-            System.out.println("Enter your tags to decompress it (Enter \\0 to end reading): ");
-        }
         while (true) {
             String line = input.nextLine();
             if (line.charAt(0) == '\\' && line.charAt(1) == '0') {
@@ -31,8 +26,8 @@ public class LZW {
             File f = new File(path);
             Scanner fInput = new Scanner(f);
             while (fInput.hasNextLine()) {
-                text += fInput.nextLine() ;
-                if  (fInput.hasNextLine()){
+                text += fInput.nextLine();
+                if (fInput.hasNextLine()) {
                     text += "\n";
                 }
             }
@@ -83,24 +78,28 @@ public class LZW {
         String in_text;
         String out_text;
         switch (choice) {
-            case 1:
-                in_text = readFormConsole('c');
+            case 1: {
+                System.out.println("Enter your text to compress it (Enter \\0 to end reading): ");
+                in_text = readFormConsole();
                 out_text = compress(in_text);
                 System.out.println("the compressed text: ");
                 System.out.println(out_text);
                 break;
-            case 2:
-                in_text = readFormConsole('d');
+            }
+            case 2: {
+                System.out.println("Enter your tags to decompress it (Enter \\0 to end reading): ");
+                in_text = readFormConsole();
                 out_text = decompress(in_text);
                 System.out.println("the decompressed Tags: ");
                 System.out.println(out_text);
                 break;
+            }
             case 3: {
                 System.out.print("Enter the path of the text file: ");
                 String path = input.nextLine();
                 in_text = readFromFile(path);
                 out_text = compress(in_text);
-                writeToFile(path,out_text, 'c');
+                writeToFile(path, out_text, 'c');
                 break;
             }
             case 4: {
@@ -108,7 +107,7 @@ public class LZW {
                 String path = input.nextLine();
                 in_text = readFromFile(path);
                 out_text = decompress(in_text);
-                writeToFile(path,out_text, 'd');
+                writeToFile(path, out_text, 'd');
                 break;
             }
             default:
@@ -128,68 +127,65 @@ public class LZW {
             } else {
                 if (dictionary.contains(word)) {
                     index = dictionary.indexOf(word);
-                }
-                else{
+                } else {
                     dictionary.add(word);
-                    if(word.length()==2){
+                    if (word.length() == 2) {
                         indexes.add(index);
-                    }else{
-                        indexes.add(index+128);
+                    } else {
+                        indexes.add(index + 128);
                     }
                     i--;
                     word = "";
                     index = 0;
-                    
+
                 }
             }
         }
-        if(word.length() != 0){
-            if(word.length() == 1){
-                indexes.add(word.charAt(0) -'\0');
-            }
-            else{
-                indexes.add(index+128);
+        if (word.length() != 0) {
+            if (word.length() == 1) {
+                indexes.add(word.charAt(0) - '\0');
+            } else {
+                indexes.add(index + 128);
             }
         }
         String compressedText = "";
-        for (int i =0; i < indexes.size();i++) {
+        for (int i = 0; i < indexes.size(); i++) {
             compressedText += Integer.toString(indexes.get(i));
-            if(i != indexes.size()-1){
+            if (i != indexes.size() - 1) {
                 compressedText += ",";
             }
         }
         return compressedText;
     }
 
-    public static String decompress(String compressedText){
+    public static String decompress(String compressedText) {
         String[] strIndexes = compressedText.split(",");
         Vector<String> dictionary = new Vector<>();
-        String produceText = "",perviousDecompressedText = "",dictionaryText="";
+        String produceText = "", perviousDecompressedText = "", dictionaryText = "";
         int currentIndex = 0;
-        if(strIndexes.length > 0){
+        if (strIndexes.length > 0) {
             currentIndex = Integer.parseInt(strIndexes[0]);
-            produceText += (char)currentIndex;
-            perviousDecompressedText = perviousDecompressedText +(char)currentIndex;
+            produceText += (char) currentIndex;
+            perviousDecompressedText = perviousDecompressedText + (char) currentIndex;
 
         }
-        for(int i = 1 ; i < strIndexes.length ; i++){
+        for (int i = 1; i < strIndexes.length; i++) {
             currentIndex = Integer.parseInt(strIndexes[i]);
-            if( currentIndex< 128){
-                produceText += (char)currentIndex;
-                dictionaryText = perviousDecompressedText +(char)currentIndex;
-                perviousDecompressedText = "" + (char)currentIndex;
+            if (currentIndex < 128) {
+                produceText += (char) currentIndex;
+                dictionaryText = perviousDecompressedText + (char) currentIndex;
+                perviousDecompressedText = "" + (char) currentIndex;
                 dictionary.add(dictionaryText);
-            }else{
-                if( currentIndex-128 < dictionary.size()  ){
-                    produceText += dictionary.elementAt(currentIndex -128);
-                    dictionaryText = perviousDecompressedText +dictionary.elementAt(currentIndex-128).charAt(0);
-                    perviousDecompressedText = dictionary.elementAt(currentIndex-128);
+            } else {
+                if (currentIndex - 128 < dictionary.size()) {
+                    produceText += dictionary.elementAt(currentIndex - 128);
+                    dictionaryText = perviousDecompressedText + dictionary.elementAt(currentIndex - 128).charAt(0);
+                    perviousDecompressedText = dictionary.elementAt(currentIndex - 128);
                     dictionary.add(dictionaryText);
-                }
-                else{
-                    dictionary.add(perviousDecompressedText+perviousDecompressedText.charAt(0));
-                    produceText += perviousDecompressedText+perviousDecompressedText.charAt(0);
-                    perviousDecompressedText = perviousDecompressedText+perviousDecompressedText.charAt(0);
+                } else {
+                    dictionary.add(perviousDecompressedText + perviousDecompressedText.charAt(0));
+                    produceText += perviousDecompressedText + perviousDecompressedText.charAt(0);
+                    perviousDecompressedText = perviousDecompressedText + perviousDecompressedText.charAt(0);
                 }
             }
         }
